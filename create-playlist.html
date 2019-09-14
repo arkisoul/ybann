@@ -1,0 +1,879 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Create Playlist | Ybann</title>
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu:400,700" rel="stylesheet">
+        <link rel="stylesheet" href="css/bootstrap.css" />
+        <link rel="stylesheet" href="css/font-awesome.css">
+        <link rel="stylesheet" href="css/create-playlist.css" />
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <!-- Large modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createPlaylistModal">Player</button>
+
+        <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Create Playlist" id="createPlaylistModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h1 class="modal-title">Create Playlist</h1>
+                    </div>
+                    <div class="modal-body">
+                        <div id="create-playlist-body">
+                            <div player-section="" ng-controller="PlayerController" id="music-player-section" class="ng-scope open" style="display:none;">
+                                <sound-manager></sound-manager>
+                                <div class="music-player">
+                                    <div class="content-music">
+                                        <div class="music-row">
+                                            <div class="crt-music col-sm-5">
+                                                <i class="icon-minimize player_close hidden-phone" onclick="closeplayerlgscreen()" title="Close"></i>
+                                                <div class="tabRegion tabIndexFn" id="tabIndexFn0">
+                                                    <div class="tab-dropdowns"><a href="javascript:void(0);"><span>playlist</span></a><i class="icon-tabdropdown"></i></div>
+                                                    <ul id="myTab-musicoptions" class="tabsIndex small-screen-tabs hidden-xs hidden-md list-inline">
+                                                        <li class=""><a href="#playlist" ng-click="clearSearchBar();getUsersPlayList(1)" data-toggle="tab" music-type="InitPlaylist" music-player="play" class="ng-isolate-scope"><span>playlist</span> <span class="tabsIndexIcon"><img src="img/menu-icon/playlist.png" width="18" height="18" alt=""></span></a></li>
+                                                        <li class=""><a href="#radio" ng-click="getAudios()" data-toggle="tab" music-type="InitRadio" music-player="play" class="ng-isolate-scope"><span>Radio</span><span class="tabsIndexIcon"><img src="img/menu-icon/radio.png" width="18" height="18" alt=""></span></a></li>
+                                                        <li class=""><a href="#discover" data-toggle="tab" ng-click="getGenreList()" music-type="InitDiscover" music-player="play" class="ng-isolate-scope"><span>Discover</span><span class="tabsIndexIcon"><img src="img/menu-icon/discover.png" width="18" height="18" alt="" /></a></li>
+                                                    </ul>
+                                                    <div id="myTabContent" class="tab-content">
+                                                        <div class="tabsContent hide" id="playlist" index="0">
+                                                            <div class="tab-inner-content">
+                                                                <div class="search ng-hide" ng-show="UserPlayList.length>0||MySongsCount>0"> <i class="fa fa-search fa-14"></i>
+                                                                    <input type="hidden" id="PlaylistIDforSearch" value="">
+                                                                    <input type="hidden" id="SearchType" value="">
+                                                                    <input type="hidden" id="SectionInit" active_panel="" value="">
+                                                                    <input ng-show="showSongsList==0 &amp;&amp; showdefaultList==0" type="text" placeholder="Search" id="searchforPlaylist" ng-model="SearchKeyPlaylist" class="form-control ng-pristine ng-valid">
+                                                                    <input ng-show="showSongsList==1 || showdefaultList==1" type="text" placeholder="Search" id="searchingSongs" ng-model="SearchingSongs" class="form-control ng-pristine ng-valid ng-hide">
+                                                                </div>
+                                                                <!--  <button type="button" ng-show="UserPlayList.length>0 && PlayListCount<=25" ng-click="clearModal();" class="btn btn-primary btn-top" data-toggle="modal" data-target="#createplaylist" data-rel="tipsyn" class="icon-shareicn" title="Create Playlist"><i class="icon-add"></i></button> -->
+                                                                <span id="loaderCommunityForPlayer" style="position:relative;display:none;">
+                                                                <span class="spinner">&nbsp;</span>
+                                                                </span>
+                                                                <!-- ngIf: showSongsList==0 -->
+                                                                <div class="btn-group music-playlist ng-scope" role="mysong" ng-if="showSongsList==0">
+                                                                    <div aria-expanded="true" role="mysong" class="mysonglist-drop">
+                                                                        <div class="music-head">
+                                                                            <h3>
+                                                                                <!-- ngIf: showdefaultList==1 --> <span>My songs</span>
+                                                                            </h3>
+                                                                        </div>
+                                                                        <!--Play listing-->
+                                                                        <!-- ngIf: showdefaultList==0 -->
+                                                                        <ul class="mysonglist ng-scope" ng-if="showdefaultList==0">
+                                                                            <li repeat-done="reapeatScroll();" class="playlist-current t_xaazz454" ng-class="{'playing': currentPlaying.PlaylistID=='xaazz454' &amp;&amp; isPlaying==true}">
+                                                                                <!-- ngIf: MySongsCount>0 -->
+                                                                                <!-- ngIf: MySongsCount==0 || !MySongsCount --><a href="javascript:void(0);" ng-if="MySongsCount==0 || !MySongsCount" class="ng-scope">
+                                                                                <small class="paly"><i class="icon-musicplay"></i></small>
+                                                                                </a><!-- end ngIf: MySongsCount==0 || !MySongsCount -->
+                                                                                <a href="javascript:void(0);" ng-click="getSongs(1)">
+                                                                                <span class="music-info">
+                                                                                <span class="name-added">My songs</span>
+                                                                                <span class="music-count ng-binding"> Songs</span>
+                                                                                </span>
+                                                                                </a>
+                                                                                <!-- <a class="playlist-item-share" ng-click='getfriends(1);'><i data-target="#playlistShare" data-toggle="modal" data-rel="tipsys" class="icon-shareicn" original-title="Share">&nbsp;</i></a> -->
+                                                                                <a href="javascript:void(0);" class="playlist-item-next" ng-click="getSongs(1)">
+                                                                                <i class="icon-nextarrow"></i>
+                                                                                </a>
+                                                                            </li>
+                                                                        </ul>
+                                                                        <!-- end ngIf: showdefaultList==0 -->
+                                                                        <!--//Play listing-->
+                                                                        <!--SubPlay listing-->
+                                                                        <!-- ngIf: showdefaultList==1 -->
+                                                                        <!--//SubPlay listing-->
+                                                                    </div>
+                                                                </div>
+                                                                <!-- end ngIf: showSongsList==0 -->
+                                                                <!-- ngIf: UserPlayList.length==0 && MySongsCount==0 && showPlaylistMsg==0 && showdefaultList==0 -->
+                                                                <!-- ngIf: UserPlayList.length==0 && MySongsCount>0 && showPlaylistMsg==0 && showdefaultList==0 -->
+                                                                <!-- ngIf: showPlaylistMsg==1 -->
+                                                                <div class="btn-group music-playlist last" role="playlistsong" ng-show="showdefaultList==0">
+                                                                    <div aria-expanded="true" role="playlistsong" class="playlist-drop ng-hide" ng-show="UserPlayList.length>0">
+                                                                        <div class="music-head">
+                                                                            <h3><a class="back-action-playlist ng-hide" data-ng-click="SongsListToggle()" ng-show="showSongsList==1" style="display:inline" href="javascript:void(0);"><i class="icon-back "></i></a> <span class="ng-binding">My Playlist</span></h3>
+                                                                        </div>
+                                                                        <!--Play listing-->
+                                                                        <div class="playlist custom-scrollbar mCustomScrollbar _mCS_1 mCS_no_scrollbar" ng-show="showSongsList==0">
+                                                                            <div id="mCSB_1" class="mCustomScrollBox mCS-light mCSB_vertical mCSB_inside" style="max-height: 0px;" tabindex="0">
+                                                                                <div id="mCSB_1_container" class="mCSB_container mCS_y_hidden mCS_no_scrollbar_y" style="position:relative; top:0; left:0;" dir="ltr">
+                                                                                    <ul>
+                                                                                        <!-- ngRepeat: PlayList in UserPlayList -->
+                                                                                    </ul>
+                                                                                </div>
+                                                                                <div id="mCSB_1_scrollbar_vertical" class="mCSB_scrollTools mCSB_1_scrollbar mCS-light mCSB_scrollTools_vertical" style="display: none;">
+                                                                                    <div class="mCSB_draggerContainer">
+                                                                                        <div id="mCSB_1_dragger_vertical" class="mCSB_dragger" style="position: absolute; min-height: 30px; top: 0px;" oncontextmenu="return false;">
+                                                                                            <div class="mCSB_dragger_bar" style="line-height: 30px;"></div>
+                                                                                        </div>
+                                                                                        <div class="mCSB_draggerRail"></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <!--//Play listing-->
+                                                                        <!--SubPlay listing-->
+                                                                        <div class="sub-playlist custom-scrollbar ng-hide mCustomScrollbar _mCS_2 mCS_no_scrollbar" style="display: block;" ng-show="showSongsList==1">
+                                                                            <div id="mCSB_2" class="mCustomScrollBox mCS-light mCSB_vertical mCSB_inside" style="max-height: 0px;" tabindex="0">
+                                                                                <div id="mCSB_2_container" class="mCSB_container mCS_y_hidden mCS_no_scrollbar_y" style="position:relative; top:0; left:0;" dir="ltr">
+                                                                                    <ul>
+                                                                                        <!-- ngRepeat: Songs in PlaySongList -->
+                                                                                        <li class="no-result-found ng-hide" ng-show="PlaySongList.length==0">No tracks found</li>
+                                                                                    </ul>
+                                                                                </div>
+                                                                                <div id="mCSB_2_scrollbar_vertical" class="mCSB_scrollTools mCSB_2_scrollbar mCS-light mCSB_scrollTools_vertical" style="display: none;">
+                                                                                    <div class="mCSB_draggerContainer">
+                                                                                        <div id="mCSB_2_dragger_vertical" class="mCSB_dragger" style="position: absolute; min-height: 30px; top: 0px;" oncontextmenu="return false;">
+                                                                                            <div class="mCSB_dragger_bar" style="line-height: 30px;"></div>
+                                                                                        </div>
+                                                                                        <div class="mCSB_draggerRail"></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <!--//SubPlay listing-->
+                                                                    </div>
+                                                                </div>
+                                                                <span class="post-loader" id="loaderCommunity" style="display:none;">
+                                                                <span class="spinner">&nbsp;</span>
+                                                                </span>
+                                                                <button ng-show="PlayListCount<25 &amp;&amp; ShowCreatePlaylistBtn==0" class="btn btn-primary btn-block m-t-15 ng-hide" data-toggle="modal" data-target="#createplaylist" ng-click="clearModal();">CREATE PLAYLIST</button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tabsContent hide" id="radio" index="0">
+                                                            <div class="tab-inner-content">
+                                                                <span id="loaderCommunityForRadio" style="position:relative;display:none;">
+                                                                <span class="spinner">&nbsp;</span>
+                                                                </span>
+                                                                <button id="radioplaybtn" class="btn btn-primary ng-isolate-scope" music-player="play" add-song="Audios" song-list="Audios" music-type="Radio">
+                                                                    <ul style="display:none">
+                                                                        <!-- ngRepeat: Audio in Audios -->
+                                                                    </ul>
+                                                                    <span id="toggleplayradio">PLAY</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tabsContent hide" id="discover" index="0">
+                                                            <div class="tab-inner-content">
+                                                                <div class="btn-group music-playlist last" role="genrelist">
+                                                                    <div aria-expanded="true" role="genrelist" class="genrelist-drop">
+                                                                        <div class="music-head">
+                                                                            <h3>
+                                                                                <!-- ngIf: showGenreList==1 --> <span class="ng-binding">All Genre</span>
+                                                                            </h3>
+                                                                        </div>
+                                                                        <!--Play listing-->
+                                                                        <!-- ngIf: showGenreList==0 -->
+                                                                        <!--//Play listing-->
+                                                                        <!--SubPlay listing-->
+                                                                        <!-- ngIf: showGenreList==1 -->
+                                                                        <!--//SubPlay listing-->
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- <div class="music-info col-sm-7" ng-show="UserPlayList.length==0"><div class="no-music"><i class="icon-sad"></i> Looks like you don’t have any music</div></div> -->
+                                            <div class="music-info col-sm-7">
+                                                <div class="sm2-bar-ui full-width fixed">
+                                                    <div class="bd sm2-main-controls">
+                                                        <div class="sm2-inline-texture"></div>
+                                                        <div class="sm2-inline-gradient"></div>
+                                                        <!-- <div class="sm2-inline-element sm2-button-element sm2-menu">
+                                                            <div class="sm2-button-bd">
+                                                             <a href="#menu" class="sm2-inline-button menu-player">menu</a>
+                                                            </div>
+                                                            </div> -->
+                                                        <div class="sm2-inline-element sm2-button-element player_navigation">
+                                                            <div class="sm2-button-bd">
+                                                                <a href="javascript:void(0)" title="Previous" prev-track="" class="sm2-inline-button previous">&lt;Previous </a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="sm2-inline-element sm2-button-element">
+                                                            <div class="sm2-button-bd sm2-play-pause" ng-class="{playing:isPlaying}">
+                                                                <a href="javascript:void(0)" play-pause-toggle="" data-play="Play!" data-pause="Pause!" class="sm2-inline-button play-pause" title="Pause">Play / pause</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="sm2-inline-element sm2-button-element" ng-hide="currentPlaying.Type=='advt'">
+                                                            <div class="sm2-button-bd">
+                                                                <a href="javascript:void(0)" title="next" next-track="" class="sm2-inline-button next">&gt; next</a>
+                                                            </div>
+                                                        </div>
+                                                        <!-- <div class="sm2-inline-element sm2-button-element player_navigation">
+                                                            <div class="sm2-button-bd" ng-class="{active:repeat}">
+                                                              <a href="javascript:void(0)" repeat-music title="Repeat Play List" class="sm2-inline-button shuffle"></a>
+                                                            </div>
+                                                            </div> -->
+                                                        <div class="sm2-inline-element sm2-button-element player_navigation">
+                                                            <div class="sm2-button-bd" ng-class="{active:shuffle}">
+                                                                <a href="javascript:void(0)" shuffle-music-list="" title="Shuffle" class="sm2-inline-button shuffle"></a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="sm2-inline-element sm2-button-element player_navigation">
+                                                            <div class="sm2-button-bd" ng-class="{active:repeat_song}">
+                                                                <a href="javascript:void(0)" repeat-song="" title="repeat" class="sm2-inline-button repeat"></a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="sm2-inline-element sm2-inline-status">
+                                                            <div class="sm2-playlist">
+                                                                <div class="sm2-playlist-target">
+                                                                    <ul class="sm2-playlist-bd">
+                                                                        <li class="ng-binding">
+                                                                            <!-- ngIf: currentPlaying.Artist --><span ng-bind="currentPlaying.Artist" class="ng-binding"></span>
+                                                                        </li>
+                                                                    </ul>
+                                                                    <!-- playlist <ul> + <li> markup will be injected here -->
+                                                                    <!-- if you want default / non-JS content, you can put that here. -->
+                                                                    <noscript>
+                                                                        <p>JavaScript is required.</p>
+                                                                    </noscript>
+                                                                </div>
+                                                            </div>
+                                                            <div class="sm2-progress">
+                                                                <div class="sm2-row">
+                                                                    <div class="sm2-inline-time ng-binding">00:00</div>
+                                                                    <div class="sm2-progress-bd">
+                                                                        <div class="sm2-progress-track" seek-track="">
+                                                                            <div class="sm2-progress-bar" ng-style="{width : ( progress + '%' ) }"></div>
+                                                                            <div class="sm2-progress-ball" ng-style="{left : ( progress + '%' ) }">
+                                                                                <div class="overlay-circle"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="sm2-inline-duration ng-binding">00:00</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="sm2-inline-element sm2-button-element sm2-volume">
+                                                            <div class="sm2-button-bd" volume-bar="">
+                                                                <span class="sm2-inline-button sm2-volume-control volume-shade"></span>
+                                                                <a href="javascript:void(0)" class="sm2-inline-button sm2-volume-control" style="clip: rect(0px 36px 27px 0px)">volume</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="sm2-inline-element sm2-button-element sm2-close-player visible-xs" onclick="closePlayerMobile()">
+                                                            <i class="icon-music-cross"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="bd sm2-playlist-drawer sm2-element">
+                                                        <div class="sm2-playlist-wrapper">
+                                                            <!--Play listing-->
+                                                            <div ng-hide="playlistFlag" class="">
+                                                                <span>My Playlist</span>
+                                                                <ul class="playlist">
+                                                                    <!-- ngRepeat: list in PlaylistData -->
+                                                                </ul>
+                                                            </div>
+                                                            <!--//Play listing-->
+                                                            <!--SubPlay listing-->
+                                                            <div class="songlist ng-hide" ng-hide="!playlistFlag">
+                                                                <a ng-hide="!playlistFlag" class="back-to-playlist ng-hide" ng-click="showPlaylist()" href="javascript:void(0);"><i class="icon-back "></i></a>
+                                                                <span ng-bind="playlistname" class="ng-binding"></span>
+                                                                <ul class="subplaylist sm2-playlist-bd ng-hide" ng-hide="!playlistFlag">
+                                                                    <!-- ngRepeat: slist in SongList -->
+                                                                </ul>
+                                                            </div>
+                                                            <!--//SubPlay listing-->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Muisc Player ends here-->
+                                <!--Create Music-->
+                                <div class="modal fade" id="createplaylist" tabindex="-1" role="dialog" aria-labelledby="myModalLabel3" aria-hidden="true">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <form id="createPlayListUser" class="ng-pristine ng-valid">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" tabindex="-1" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                                                    <h4 class="modal-title ng-binding" id="myModalLabel3">CREATE playlist</h4>
+                                                </div>
+                                                <div class="modal-body no-modal-space">
+                                                    <div class="music-wrap">
+                                                        <div class="form-group">
+                                                            <input type="hidden" name="PlaylistGUID" data-ng-model="PlaylistGUID" value="" class="ng-pristine ng-valid">
+                                                            <input type="hidden" name="PlaylistIDForUpdate" id="PlaylistIDForUpdate" data-ng-model="PlaylistIDForUpdate" value="" class="ng-pristine ng-valid">
+                                                            <!--  <input type="text" class="form-control" placeholder="Enter Your Playlist Name"
+                                                                name="PlaylistName"
+                                                                id="PlaylistName"
+                                                                uix-input
+                                                                data-controltype="general"
+                                                                data-mandatory="true"
+                                                                data-msglocation="errorPlayListName"
+                                                                data-requiredmessage="Please enter your Playlist Name"
+                                                                tabindex="1"
+                                                                data-ng-model="PlaylistName"
+                                                                maxlength='50'
+                                                                 data-ng-change="getPlaylistDetailforEdit('',2)"
+                                                                > -->
+                                                            <input type="text" class="form-control ng-pristine ng-valid" placeholder="Enter Your Playlist Name" name="PlaylistName" id="PlaylistName" uix-input="" data-controltype="general" data-mandatory="true" data-msglocation="errorPlaylistName" data-requiredmessage="Please enter your Playlist Name" tabindex="1" maxlength="50" data-ng-model="PlaylistName" ng-keyup="PlayListSuggestion()">
+                                                            <label class="error-holder" id="errorPlaylistName"></label>
+                                                        </div>
+                                                        <div class="form-group search-songs search-album">
+                                                            <i class="fa fa-search fa-14"></i>
+                                                            <div class="tagEdit">
+                                                                <div class="text-fields">
+                                                                    <i class="fa fa-search fa-14"></i>
+                                                                    <tags-input key-property="AlbumID" id="AlbumName" class="AlbumName ng-isolate-scope ng-pristine ng-valid ng-valid-max-tags ng-valid-min-tags ng-valid-leftover-text" on-tag-added="tagAdded($tag)" on-tag-removed="tagRemoved($tag)" placeholder="Search Album" data-ng-model="AlbumData" display-property="Name" add-from-autocomplete-only="true" tabindex="2" max-tags="1">
+                                                                        <div class="host" tabindex="-1" ng-click="eventHandlers.host.click()" ti-transclude-append="">
+                                                                            <div class="tags" ng-class="{focused: hasFocus}">
+                                                                                <ul class="tag-list">
+                                                                                    <!-- ngRepeat: tag in tagList.items track by track(tag) -->
+                                                                                </ul>
+                                                                                <input class="input ng-pristine ng-valid" autocomplete="off" ng-model="newTag.text" ng-change="eventHandlers.input.change(newTag.text)" ng-keydown="eventHandlers.input.keydown($event)" ng-focus="eventHandlers.input.focus($event)" ng-blur="eventHandlers.input.blur($event)" ng-paste="eventHandlers.input.paste($event)" ng-trim="false" ng-class="{'invalid-tag': newTag.invalid}" ng-disabled="disabled" ti-bind-attrs="{type: options.type, placeholder: options.placeholder, tabindex: options.tabindex, spellcheck: options.spellcheck}" ti-autosize="" type="text" placeholder="Search Album" tabindex="2" spellcheck="true"><span class="input" style="visibility: hidden; width: auto; white-space: pre; display: none;">Search Album</span>
+                                                                            </div>
+                                                                            <auto-complete source="loadTagsForAlbum($query)" class="ng-scope ng-isolate-scope">
+                                                                                <!-- ngIf: suggestionList.visible -->
+                                                                            </auto-complete>
+                                                                        </div>
+                                                                    </tags-input>
+                                                                </div>
+                                                            </div>
+                                                            <input type="hidden" name="AlbumID" id="AlbumID" value="[]">
+                                                        </div>
+                                                        <div class="form-group search-songs"> <i class="fa fa-search fa-14"></i>
+                                                            <input type="text" id="searchforSongs" data-ng-model="searchforSongs" placeholder="Search Songs" tabindex="3" class="form-control ng-pristine ng-valid" value="">
+                                                            <input type="hidden" id="searchPlaylistSong">
+                                                        </div>
+                                                        <!-- ngIf: NoSongsPlaylist==1 && searchVal.length>0 -->
+                                                        <!-- ngIf: NoSongsPlaylist==0 -->
+                                                        <ul class="cmn-msglisitng modal-cmn-lisitng ng-scope" ng-if="NoSongsPlaylist==0">
+                                                            <!-- ngRepeat: list in listObj = getSearchSongs -->
+                                                        </ul>
+                                                        <!-- end ngIf: NoSongsPlaylist==0 -->
+                                                    </div>
+                                                    <div class="uploadmusic">
+                                                        <ul>
+                                                            <!-- ngRepeat: list in listObj = createList -->
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer musicfooter">
+                                                    <div class="form-group">
+                                                        <button type="button" tabindex="4" id="PlaylistBtn" data-target="#createplaylist" ng-click="createPlayList();" class="btn btn-primary btn-lg btn-block ng-binding">CREATE</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--//Create Music-->
+                                <!-- <div class="music-player" ng-hide="UserPlayList.length>0">
+                                    <div class="content-music">
+
+                                      <div class="music-row">
+                                        <div class="music-info"><i class="icon-sad"></i> Looks like you don’t have any music</div>
+                                        <div class="crt-music">
+                                          <button class="btn btn-primary btn-lg pull-right" data-toggle="modal" data-target="#createplaylist" ng-click="clearModal();createPlayList();">CREATE PLAYLIST</button>
+                                        </div>
+                                      </div>
+
+
+                                    </div>
+                                    </div> -->
+                                <!--Create Playlist Share-->
+                                <div class="modal fade" id="playlistShare" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                                                <h4 class="modal-title InviteModalTite ng-binding" id="myModalLabel">Share  : </h4>
+                                            </div>
+                                            <div class="modal-body no-space modalMin-height ">
+                                                <div class="search ng-hide" ng-show="showSearchBar==1"> <i class="fa fa-search fa-14"></i>
+                                                    <input type="hidden" id="searchFriends" ng-click="getfriends(FriendType)">
+                                                    <input type="text" placeholder="Search" id="searchforFriends" ng-model="SearchKeyFriends" class="form-control ng-pristine ng-valid">
+                                                </div>
+                                                <ul class="cmn-msglisitng modal-cmn-lisitng inviteFrnd ng-hide" id="POPUPInterest" ng-show="UserFriends.length>0">
+                                                    <!-- ngRepeat: friends in UserFriends -->
+                                                </ul>
+                                                <div class="no-result-found ng-binding ng-hide" ng-show="UserFriends.length==0"></div>
+                                            </div>
+                                            <div class="modal-footer ng-hide" ng-show="UserFriends.length>0">
+                                                <div class="col-lg-6">
+                                                    <button type="button" class="btn btn-default btn-lg btn-block" data-dismiss="modal">Cancel</button>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <button type="button" id="btn_share_playlist" class="btn btn-primary  btn-lg btn-block" ng-click="ShareWithFriends(PlaylistIDforShare,ShareType)">Done</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Create Playlist Share-->
+                                <!--Move to playlist popup-->
+                                <div class="modal fade" id="moveToPlaylist" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                                                <h4 class="modal-title InviteModalTite ng-binding" id="myModalLabel">Move song  to playlist</h4>
+                                            </div>
+                                            <div class="modal-body no-space modalMin-height ">
+                                                <div class="search"> <i class="fa fa-search fa-14"></i>
+                                                    <input type="hidden" id="searchMovePlayList" ng-click="getUsersPlayList(1)">
+                                                    <input type="text" placeholder="Search" id="searchforMovePlayList" ng-model="SearchKeyMove" class="form-control ng-pristine ng-valid">
+                                                </div>
+                                                <ul class="cmn-msglisitng modal-cmn-lisitng inviteFrnd" id="POPUPInterest">
+                                                    <!-- ngRepeat: PlayList in UserPlayListMove -->
+                                                </ul>
+                                                <div class="no-result-found ng-hide" ng-show="UserPlayListMove.length==0">No playlist found</div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" ng-show="UserPlayListMove.length>0" id="btnEventInvite" ng-click="MoveToPlayList('move',PlaylistMediaID)" class="btn btn-primary  btn-lg btn-block savebtn ng-hide">Save</button>
+                                                <div id="loaderEventInvite" style="display:none"><span class="spinner30">&nbsp;</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix">
+                                <div class="music-player-tabs-container pull-left">
+                                    <!-- Nav tabs -->
+                                    <ul class="nav nav-pills" role="tablist" id="musicPlayerTabbaleTab">
+                                        <li role="presentation" class="active"><a href="#playlistTabbaleTab" ng-click="clearSearchBar();getUsersPlayList(1)"aria-controls="playlist" role="tab" data-toggle="tab" music-type="InitPlaylist" music-player="play" class="ng-isolate-scope"><span>playlist</span> <span class="tabsIndexIcon"><img src="img/menu-icon/playlist.png" width="18" height="18" alt=""></span></a></li>
+                                        <li role="presentation" class=""><a href="#radioTabbaleTab" ng-click="getAudios()" aria-controls="radio" role="tab" data-toggle="tab" music-type="InitRadio" music-player="play" class="ng-isolate-scope"><span>Radio</span><span class="tabsIndexIcon"><img src="img/menu-icon/radio.png" width="18" height="18" alt=""></span></a></li>
+                                        <li role="presentation" class=""><a href="#discoverTabbaleTab" data-toggle="tab" aria-controls="discover" role="tab" ng-click="getGenreList()" music-type="InitDiscover" music-player="play" class="ng-isolate-scope"><span>Discover</span><span class="tabsIndexIcon"><img src="img/menu-icon/discover.png" width="18" height="18" alt="" /></a></li>
+                                    </ul>
+                                </div>
+                                <div class="pull-right"><img src="img/music_player.png" alt="" class="img-responsive"></div>
+                            </div>
+                            <div id="create-playlist-container">
+                                <div class="cpc-head">
+                                    <div class="cpc-head-content">
+                                        <h2 class="mb-2">Explore Top Music Powered by your Scrobbles</h2>
+                                        <p>We bring together your favourite music services and join up listening, watching and sharing to connect your musical world.</p>
+                                        <p>Below you can visualise, in real-time, the listing habits &amp; trends of Yabnn's global community. Go Explore.</p>
+                                    </div>
+                                </div>
+                                <div class="cpc-body">
+                                    <div class="music-player-tab-content-container">
+                                        <!-- Tab panes -->
+                                        <div class="tab-content">
+                                            <div role="tabpanel" class="tab-pane fade in active" id="playlistTabbaleTab">
+                                                <div id="playlist-module" class="module-main-container">
+                                                    <div class="cpc-module-heading"><h1 class="cpc-title">Playlist</h1></div>
+                                                    <div class="container-fluid">
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                                <div class="btn-box">My Songs</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row d-flex">
+                                                            <div class="col-sm-3 col-xs-12">
+                                                                <div class="song-cover">
+                                                                    <div class="song-cover-img">
+                                                                        <img src="img/song_play/my-song.png" alt="Song" class="img-responsive" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-6 col align-self-center col-xs-12">
+                                                                <div class="search-playlist-block">
+                                                                    <form action="">
+                                                                        <div class="form-group">
+                                                                            <label for="playlist-search" class="sr-only">Search playlists</label>
+                                                                            <div class="search-box-wrapper">
+                                                                                <input type="search" class="form-control" name="playlist-search" id="playlist-search" placeholder="Search" />
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-3 col align-self-center col-xs-12">
+                                                                <div class="cp-btn-block">
+                                                                    <button class="btn btn-primary">Create Playlist</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-xs-12">
+                                                                <div class="btn-box">My Playlist</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 col-xs-12">
+                                                                <div class="playlist-cover">
+                                                                    <div class="playlist-cover-img">
+                                                                        <img src="img/song_play/songs.png" alt="Cover" class="img-responsive" />
+                                                                        <button class="play-btn"><img src="img/song_play/play.png" alt="Play" /></button>
+                                                                    </div>
+                                                                    <div class="playlist-title">
+                                                                        English Songs
+                                                                    </div>
+                                                                    <div class="playlist-action">
+                                                                        <button><i class="fa fa-share-alt"></i></button>
+                                                                        <button><i class="fa fa-pencil-square-o"></i></button>
+                                                                        <button><i class="fa fa-trash-o"></i></button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-3 col-xs-12">
+                                                                <div class="playlist-cover">
+                                                                    <div class="playlist-cover-img">
+                                                                        <img src="img/song_play/songs.png" alt="Cover" class="img-responsive" />
+                                                                        <button class="play-btn"><img src="img/song_play/play.png" alt="Play" /></button>
+                                                                    </div>
+                                                                    <div class="playlist-title">
+                                                                        English Songs
+                                                                    </div>
+                                                                    <div class="playlist-action">
+                                                                        <button><i class="fa fa-share-alt"></i></button>
+                                                                        <button><i class="fa fa-pencil-square-o"></i></button>
+                                                                        <button><i class="fa fa-trash-o"></i></button>>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-3 col-xs-12">
+                                                                <div class="playlist-cover">
+                                                                    <div class="playlist-cover-img">
+                                                                        <img src="img/song_play/songs.png" alt="Cover" class="img-responsive" />
+                                                                        <button class="play-btn"><img src="img/song_play/play.png" alt="Play" /></button>
+                                                                    </div>
+                                                                    <div class="playlist-title">
+                                                                        English Songs
+                                                                    </div>
+                                                                    <div class="playlist-action">
+                                                                        <button><i class="fa fa-share-alt"></i></button>
+                                                                        <button><i class="fa fa-pencil-square-o"></i></button>
+                                                                        <button><i class="fa fa-trash-o"></i></button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-3 col-xs-12">
+                                                                <div class="playlist-cover">
+                                                                    <div class="playlist-cover-img">
+                                                                        <img src="img/song_play/songs.png" alt="Cover" class="img-responsive" />
+                                                                        <button class="play-btn"><img src="img/song_play/play.png" alt="Play" /></button>
+                                                                    </div>
+                                                                    <div class="playlist-title">
+                                                                        English Songs
+                                                                    </div>
+                                                                    <div class="playlist-action">
+                                                                        <button><i class="fa fa-share-alt"></i></button>
+                                                                        <button><i class="fa fa-pencil-square-o"></i></button>
+                                                                        <button><i class="fa fa-trash-o"></i></button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div role="tabpanel" class="tab-pane fade" id="radioTabbaleTab">
+                                                <div id="radio-module" class="module-main-container">
+                                                    <div class="cpc-module-heading"><h1 class="cpc-title">Radio</h1></div>
+                                                    <div class="container-fluid">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div role="tabpanel" class="tab-pane fade" id="discoverTabbaleTab">
+                                                <div id="discover-module" class="module-main-container">
+                                                    <div class="cpc-module-heading"><h1 class="cpc-title">Discover</h1></div>
+                                                    <div class="container-fluid">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="top-artist-module">
+                                        <div class="cpc-module-heading"><h3 class="cpc-title">Top Artist</h3></div>
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-12">
+                                                    <div class="featured-artist">
+                                                        <div class="featured-artist-img">
+                                                            <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                        </div>
+                                                        <div class="featured-artist-info">
+                                                            <h2 class="featured-artist-name">J. Cole</h2>
+                                                            <p>Volutpat fringilla dis porttitor iaculis adipiscing lobortis laoreet maecenas donec eleifend praesent luctus nibh, quisque litora rhoncus inceptos fermentum habitasse.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-9 col-md-8 col-sm-7 col-xs-12">
+                                                    <div class="featured-related-artists">
+                                                        <div class="row artist-row-1">
+                                                            <div class="col-sm-4">
+                                                                <div class="featured-related-artist">
+                                                                    <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                                    <div class="artist-name">J. Cole</div>
+                                                                    <span class="music-icon"><img src="img/music.png" alt=""></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <div class="featured-related-artist">
+                                                                    <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                                    <div class="artist-name">J. Cole</div>
+                                                                    <span class="music-icon"><img src="img/music.png" alt=""></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <div class="featured-related-artist">
+                                                                    <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                                    <div class="artist-name">J. Cole</div>
+                                                                    <span class="music-icon"><img src="img/music.png" alt=""></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row artist-row-2">
+                                                            <div class="col-sm-4">
+                                                                <div class="featured-related-artist">
+                                                                    <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                                    <div class="artist-name">J. Cole</div>
+                                                                    <span class="music-icon"><img src="img/music.png" alt=""></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <div class="featured-related-artist">
+                                                                    <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                                    <div class="artist-name">J. Cole</div>
+                                                                    <span class="music-icon"><img src="img/music.png" alt=""></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <div class="featured-related-artist">
+                                                                    <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                                    <div class="artist-name">J. Cole</div>
+                                                                    <span class="music-icon"><img src="img/music.png" alt=""></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row artist-row-1">
+                                                            <div class="col-sm-4">
+                                                                <div class="featured-related-artist">
+                                                                    <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                                    <div class="artist-name">J. Cole</div>
+                                                                    <span class="music-icon"><img src="img/music.png" alt=""></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <div class="featured-related-artist">
+                                                                    <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                                    <div class="artist-name">J. Cole</div>
+                                                                    <span class="music-icon"><img src="img/music.png" alt=""></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <div class="featured-related-artist">
+                                                                    <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                                    <div class="artist-name">J. Cole</div>
+                                                                    <span class="music-icon"><img src="img/music.png" alt=""></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row artist-row-2">
+                                                            <div class="col-sm-4">
+                                                                <div class="featured-related-artist">
+                                                                    <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                                    <div class="artist-name">J. Cole</div>
+                                                                    <span class="music-icon"><img src="img/music.png" alt=""></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <div class="featured-related-artist">
+                                                                    <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                                    <div class="artist-name">J. Cole</div>
+                                                                    <span class="music-icon"><img src="img/music.png" alt=""></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-4">
+                                                                <div class="featured-related-artist">
+                                                                    <img src="img/img.png" alt="Artist" class="img-responsive" />
+                                                                    <div class="artist-name">J. Cole</div>
+                                                                    <span class="music-icon"><img src="img/music.png" alt=""></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="top-tracks-module">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="top-tracks-block">
+                                                        <div class="cpc-module-heading"><h3 class="cpc-title">Top Tracks</h3></div>
+                                                        <div class="top-tracks-container">
+                                                            <div class="top-track-row">
+                                                                <div class="top-track-artist-img">
+                                                                    <img src="img/top-tracks/1.png" alt="Artist" class="img-responsive" />
+                                                                    <span class="top-track-rank">1</span>
+                                                                </div>
+                                                                <div class="top-track-info">
+                                                                    <p class="top-track-name">Love Me - Jazz Fusion</p>
+                                                                    <p class="top-track-artist-name">Hilary Duff</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="top-track-row">
+                                                                <div class="top-track-artist-img">
+                                                                    <img src="img/top-tracks/1.png" alt="Artist" class="img-responsive" />
+                                                                    <span class="top-track-rank">2</span>
+                                                                </div>
+                                                                <div class="top-track-info">
+                                                                    <p class="top-track-name">Love Me - Jazz Fusion</p>
+                                                                    <p class="top-track-artist-name">Hilary Duff</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="top-track-row">
+                                                                <div class="top-track-artist-img">
+                                                                    <img src="img/top-tracks/1.png" alt="Artist" class="img-responsive" />
+                                                                    <span class="top-track-rank">3</span>
+                                                                </div>
+                                                                <div class="top-track-info">
+                                                                    <p class="top-track-name">Love Me - Jazz Fusion</p>
+                                                                    <p class="top-track-artist-name">Hilary Duff</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="top-track-row">
+                                                                <div class="top-track-artist-img">
+                                                                    <img src="img/top-tracks/1.png" alt="Artist" class="img-responsive" />
+                                                                    <span class="top-track-rank">4</span>
+                                                                </div>
+                                                                <div class="top-track-info">
+                                                                    <p class="top-track-name">Love Me - Jazz Fusion</p>
+                                                                    <p class="top-track-artist-name">Hilary Duff</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="top-track-row">
+                                                                <div class="top-track-artist-img">
+                                                                    <img src="img/top-tracks/1.png" alt="Artist" class="img-responsive" />
+                                                                    <span class="top-track-rank">5</span>
+                                                                </div>
+                                                                <div class="top-track-info">
+                                                                    <p class="top-track-name">Love Me - Jazz Fusion</p>
+                                                                    <p class="top-track-artist-name">Hilary Duff</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="listening-now-block">
+                                                        <div class="cpc-module-heading"><h3 class="cpc-title">Listening Now</h3></div>
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <div class="listening-now-container">
+                                                                    <div class="ln-row">
+                                                                        <div class="ln-user-img">
+                                                                            <img src="img/top-tracks/round_img_1.png" alt="Artist" class="img-responsive" />
+                                                                        </div>
+                                                                        <div class="ln-user-info">
+                                                                            <h3 class="ln-user-name">m0rrowind3</h3>
+                                                                            <div class="ln-song">Suicide Commando - Comatose Dream</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ln-row">
+                                                                        <div class="ln-user-img">
+                                                                            <img src="img/top-tracks/round_img_1.png" alt="Artist" class="img-responsive" />
+                                                                        </div>
+                                                                        <div class="ln-user-info">
+                                                                            <h3 class="ln-user-name">m0rrowind3</h3>
+                                                                            <div class="ln-song">Suicide Commando - Comatose Dream</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ln-row">
+                                                                        <div class="ln-user-img">
+                                                                            <img src="img/top-tracks/round_img_1.png" alt="Artist" class="img-responsive" />
+                                                                        </div>
+                                                                        <div class="ln-user-info">
+                                                                            <h3 class="ln-user-name">m0rrowind3</h3>
+                                                                            <div class="ln-song">Suicide Commando - Comatose Dream</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ln-row">
+                                                                        <div class="ln-user-img">
+                                                                            <img src="img/top-tracks/round_img_1.png" alt="Artist" class="img-responsive" />
+                                                                        </div>
+                                                                        <div class="ln-user-info">
+                                                                            <h3 class="ln-user-name">m0rrowind3</h3>
+                                                                            <div class="ln-song">Suicide Commando - Comatose Dream</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <div class="listening-now-container">
+                                                                    <div class="ln-row">
+                                                                        <div class="ln-user-img">
+                                                                            <img src="img/top-tracks/round_img_1.png" alt="Artist" class="img-responsive" />
+                                                                        </div>
+                                                                        <div class="ln-user-info">
+                                                                            <h3 class="ln-user-name">m0rrowind3</h3>
+                                                                            <div class="ln-song">Suicide Commando - Comatose Dream</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ln-row">
+                                                                        <div class="ln-user-img">
+                                                                            <img src="img/top-tracks/round_img_1.png" alt="Artist" class="img-responsive" />
+                                                                        </div>
+                                                                        <div class="ln-user-info">
+                                                                            <h3 class="ln-user-name">m0rrowind3</h3>
+                                                                            <div class="ln-song">Suicide Commando - Comatose Dream</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ln-row">
+                                                                        <div class="ln-user-img">
+                                                                            <img src="img/top-tracks/round_img_1.png" alt="Artist" class="img-responsive" />
+                                                                        </div>
+                                                                        <div class="ln-user-info">
+                                                                            <h3 class="ln-user-name">m0rrowind3</h3>
+                                                                            <div class="ln-song">Suicide Commando - Comatose Dream</div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ln-row">
+                                                                        <div class="ln-user-img">
+                                                                            <img src="img/top-tracks/round_img_1.png" alt="Artist" class="img-responsive" />
+                                                                        </div>
+                                                                        <div class="ln-user-info">
+                                                                            <h3 class="ln-user-name">m0rrowind3</h3>
+                                                                            <div class="ln-song">Suicide Commando - Comatose Dream</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $(function() {
+                $('#createPlaylistModal').on('shown.bs.modal', function () {
+                    var w = $('.featured-artist-img').width();
+                    $('.featured-artist-img').height(w);
+                    $('.featured-artist-img > img').width(w - 100);
+                    $('.featured-artist-img > img').height(w - 100);
+                })
+                $('body').on('click', '#musicPlayerTabs > li > a', function(event) {
+                    event.preventDefault();
+                    /* Act on the event */
+                    var anchor = $(this);
+                    if (anchor.parents('li').hasClass('active')) { console.log('already active'); return }
+                    anchor.parents('li').addClass('active').siblings('li').removeClass('active');
+                    var targetContainer = anchor.attr('href');
+                    console.log($(targetContainer));
+                    $(targetContainer).addClass('in active').siblings('.tab-pane').removeClass('in active');
+                });
+            });
+        </script>
+    </body>
+</html>
